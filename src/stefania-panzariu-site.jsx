@@ -1,5 +1,11 @@
 const { useState, useEffect, useRef, useCallback } = React;
 
+// —— Configuración Modular de Servicios ——
+// Cambiar showMicropigmentacion a true para reactivar el bloque y menús de Micropigmentación
+const FEATURES = {
+  showMicropigmentacion: false,
+};
+
 const BUSINESS = {
   name: "Stefania Panzariu Studio",
   tagline: "Belleza de Autor",
@@ -19,6 +25,7 @@ const BUSINESS = {
   landmark: "A pocos pasos de la Plaza de la Hispanidad.", // referencia cercana
   mapsShort: "https://maps.app.goo.gl/RmEoSxGfpnqJU6RFA",
   reviewsUrl: "https://share.google/glBQvfSFh7AWF6Wdg",
+  paymentNote: "Pago directo en el establecimiento (Efectivo o Tarjeta). Sin pagos online requeridos.",
 };
 
 const BRAND_ASSETS = {
@@ -280,17 +287,21 @@ function Drawer({ open, onClose }) {
     return () => {document.body.style.overflow = "";};
   }, [open]);
 
-  const links = [
-  { href: "/servicios", label: "Servicios", idx: "00" },
-  { href: "#masajes", label: "Masajes", idx: "01" },
-  { href: "#unas", label: "Uñas de Autor", idx: "02" },
-  { href: "#estetica", label: "Estética Facial", idx: "03" },
-  { href: "#corporal", label: "Estética Corporal", idx: "04" },
-  { href: "#micropigmentacion", label: "Micropigmentación", idx: "05" },
-  { href: "#testimonios", label: "Reseñas", idx: "06" },
-  { href: "#trayectoria", label: "Trayectoria", idx: "07" },
-  { href: "#faq", label: "Preguntas", idx: "08" },
-  { href: "#contacto", label: "El Refugio", idx: "09" }];
+  const rawLinks = [
+    { href: "/servicios", label: "Servicios", idx: "00" },
+    { href: "#conoce-estefania", label: "Conoce a Estefanía", idx: "01" },
+    { href: "#masajes", label: "Masajes & Dúo", idx: "02" },
+    { href: "#unas", label: "Uñas de Autor", idx: "03" },
+    { href: "#estetica", label: "Estética Facial", idx: "04" },
+    { href: "#corporal", label: "Estética Corporal", idx: "05" },
+    { href: "#micropigmentacion", label: "Micropigmentación", idx: "06" },
+    { href: "#testimonios", label: "Reseñas", idx: "07" },
+    { href: "#trayectoria", label: "Trayectoria", idx: "08" },
+    { href: "#faq", label: "Preguntas", idx: "09" },
+    { href: "#contacto", label: "El Refugio", idx: "10" }
+  ];
+
+  const links = rawLinks.filter((l) => l.href !== "#micropigmentacion" || FEATURES.showMicropigmentacion);
 
 
   return (
@@ -424,11 +435,12 @@ function Nav() {
         </a>
         <nav className="nav-links">
           <a href="/servicios">Servicios</a>
-          <a href="#masajes">Masajes</a>
+          <a href="#conoce-estefania">Conoce a Estefanía</a>
+          <a href="#masajes">Masajes &amp; Dúo</a>
           <a href="#unas">Uñas de Autor</a>
-          <a href="#estetica">Estética</a>
+          <a href="#estetica">Facial</a>
           <a href="#corporal">Corporal</a>
-          <a href="#trayectoria">Trayectoria</a>
+          {FEATURES.showMicropigmentacion && <a href="#micropigmentacion">Micropigmentación</a>}
         </nav>
         <div className="nav-cta">
           <NavDropdown label={<><span className="lead-ic">{Pin}</span>Encuéntranos</>} panelClass="socials">
@@ -511,6 +523,9 @@ function Hero() {
       <div className="hero-inner">
         <div className="hero-text">
           <R v="r-fade" delay={0}>
+            <div className="hero-duo-badge" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(180, 140, 100, 0.12)", border: "1px solid rgba(180, 140, 100, 0.3)", padding: "6px 14px", borderRadius: "100px", fontSize: "13px", fontWeight: "500", marginBottom: "14px", color: "var(--fg)" }}>
+              <span>✨</span> <strong>Experiencia Dúo:</strong> Masajes relajantes en pareja, amigas o familiares
+            </div>
             <div className="kicker">{BUSINESS.name} · {BUSINESS.tagline}</div>
           </R>
 
@@ -521,15 +536,18 @@ function Hero() {
           </h1>
 
           <R className="lead" delay={1050}>
-            Masajes en pareja y rituales relajantes, uñas de autor y estética facial
-            y corporal en un espacio íntimo concebido para tu calma en Cuenca.
+            Masajes relajantes y en pareja (Dúo), uñas de autor y estética facial y corporal en un espacio íntimo concebido para tu calma en Cuenca.
           </R>
 
           <R className="hero-actions" delay={1250}>
-            <a className="btn dark" href={wa("Hola Stefania, he estado viendo la web de tu estudio y me gustaría reservar un masaje en pareja / relajante.")}>
-              Reservar Masaje <span className="arrow">→</span>
+            <a className="btn dark" href={wa("Hola Stefania, he estado viendo la web y me gustaría reservar una Experiencia Dúo / Masaje en Pareja.")}>
+              Reservar Masaje en Dúo <span className="arrow">→</span>
             </a>
-            <a className="btn" href="#masajes">Descubre los rituales</a>
+            <a className="btn" href="#masajes">Ver Experiencia Dúo</a>
+          </R>
+
+          <R className="hero-payment-note" delay={1350} style={{ marginTop: "18px", fontSize: "13px", color: "var(--muted)", opacity: 0.9 }}>
+            💳 {BUSINESS.paymentNote}
           </R>
         </div>
 
@@ -538,7 +556,7 @@ function Hero() {
             <img
               className="cover-img"
               src={SITE_IMAGES.hero}
-              alt="Stefania Panzariu, fundadora del estudio de belleza de autor en Cuenca, especialista en micropigmentación y uñas"
+              alt="Stefania Panzariu, fundadora del estudio de belleza de autor en Cuenca"
               style={{ objectPosition: "50% 20%" }}
               width="1062" height="1509"
               fetchPriority="high"
@@ -561,6 +579,66 @@ function Hero() {
 
 }
 
+/* ---------- Conoce a Estefanía ---------- */
+function AboutStefaniaSection() {
+  return (
+    <section className="sec-about" id="conoce-estefania" style={{ padding: "100px 0", background: "var(--bg-alt, #f7f5f0)", borderTop: "1px solid var(--border, rgba(0,0,0,0.06))", borderBottom: "1px solid var(--border, rgba(0,0,0,0.06))" }}>
+      <div className="container" style={{ position: "relative", zIndex: 1 }}>
+        <R className="chapter">
+          <span className="rule"></span>
+          <span className="small-caps">Alma del estudio</span>
+        </R>
+
+        <div className="grid-2 end" style={{ alignItems: "center", gap: "48px" }}>
+          <div className="about-photo-wrap" style={{ position: "relative" }}>
+            <R v="r-mask" className="img" style={{ borderRadius: "12px", overflow: "hidden", boxShadow: "0 20px 40px rgba(0,0,0,0.08)" }}>
+              <img
+                className="cover-img"
+                src={SITE_IMAGES.hero}
+                alt="Stefania Panzariu, fundadora del estudio de belleza en Cuenca"
+                loading="lazy"
+                style={{ width: "100%", maxHeight: "560px", objectFit: "cover", objectPosition: "50% 20%" }}
+              />
+            </R>
+            <div className="about-badge" style={{ position: "absolute", bottom: "-20px", right: "20px", background: "#1a1a1a", color: "#fff", padding: "16px 24px", borderRadius: "8px", boxShadow: "0 10px 30px rgba(0,0,0,0.15)" }}>
+              <div style={{ fontFamily: "var(--serif)", fontSize: "20px", fontWeight: "400" }}>Stefania Panzariu</div>
+              <div style={{ fontSize: "12px", opacity: 0.8, textTransform: "uppercase", letterSpacing: "0.08em" }}>Fundadora &amp; Técnica Especialista</div>
+            </div>
+          </div>
+
+          <div className="about-content">
+            <R as="h2" className="h-section" style={{ marginBottom: "24px" }}>
+              <LineMask>Conoce a</LineMask>
+              <LineMask delay={120}><em style={{ fontFamily: "var(--serif)" }}>Estefanía</em>.</LineMask>
+            </R>
+            <R className="lead" delay={200} style={{ fontSize: "1.15rem", lineHeight: "1.7", marginBottom: "20px", color: "var(--fg)" }}>
+              "Mi objetivo no es cambiar la esencia de nadie, sino resaltar la elegancia, la firmeza y la salud natural que cada persona ya posee."
+            </R>
+            <R className="body" delay={280} style={{ color: "var(--muted)", marginBottom: "24px", fontSize: "1rem", lineHeight: "1.65" }}>
+              Con más de 7 años dedicados profesionalmente al cuidado estético y el bienestar corporal, he concebido un espacio de autor en Cuenca orientado a la máxima personalización. Aquí cada tratamiento se realiza sin prisas, con productos premium respetuosos con tu salud y en una atmósfera de calma y privacidad absoluta.
+            </R>
+            <R className="about-features" delay={340} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "32px" }}>
+              <div style={{ padding: "16px", background: "rgba(255,255,255,0.8)", borderRadius: "8px", border: "1px solid rgba(0,0,0,0.06)" }}>
+                <strong style={{ display: "block", fontSize: "15px", marginBottom: "4px" }}>✦ Atención 1 a 1</strong>
+                <span style={{ fontSize: "13px", color: "var(--muted)" }}>Reserva de espacio exclusivo por cita previa.</span>
+              </div>
+              <div style={{ padding: "16px", background: "rgba(255,255,255,0.8)", borderRadius: "8px", border: "1px solid rgba(0,0,0,0.06)" }}>
+                <strong style={{ display: "block", fontSize: "15px", marginBottom: "4px" }}>✦ Rigor &amp; Calidad</strong>
+                <span style={{ fontSize: "13px", color: "var(--muted)" }}>Técnicas avanzadas y asepsia rigurosa.</span>
+              </div>
+            </R>
+            <R delay={400}>
+              <a className="btn dark" href={wa("Hola Stefania, me gustaría consultar la disponibilidad para reservar una cita.")}>
+                Contactar personalmente por WhatsApp <span className="arrow">→</span>
+              </a>
+            </R>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ---------- Masajes ---------- */
 function MassageSection() {
   return (
@@ -569,7 +647,7 @@ function MassageSection() {
       <div className="container" style={{ position: "relative", zIndex: 1 }}>
         <R className="chapter">
           <span className="rule"></span>
-          <span className="small-caps">Masajes · Bienestar</span>
+          <span className="small-caps">Experiencia Dúo · Masajes &amp; Bienestar</span>
         </R>
 
         <div className="grid-2 end">
@@ -578,8 +656,7 @@ function MassageSection() {
             <LineMask delay={120}>para <em style={{ fontFamily: "var(--serif)" }}>dos</em>.</LineMask>
           </h2>
           <R className="body" delay={200}>
-            Reserva un momento de calma compartida o un ritual solo para ti. Manos
-            expertas, aromaterapia y un espacio pensado para que el tiempo se detenga.
+            La <strong>Experiencia Dúo</strong> está diseñada para compartir un ritual relajante en la misma cabina: ideal para parejas, amigas, madre e hija o padre e hijo. O si lo prefieres, disfruta de un ritual solo para ti.
           </R>
         </div>
 
@@ -587,60 +664,60 @@ function MassageSection() {
           <div className="col-photos">
             <R v="r-mask" className="img">
               <Parallax speed={0.08} className="inner">
-                <img className="cover-img" src={SITE_IMAGES.massagePareja} alt="Masaje en pareja en el estudio de Stefania Panzariu en Cuenca" loading="lazy" />
+                <img className="cover-img" src={SITE_IMAGES.massagePareja} alt="Masaje relajante en pareja en el estudio de Stefania Panzariu en Cuenca" loading="lazy" />
               </Parallax>
             </R>
             <R v="r-fade" delay={120} className="quote-tile">
               <span className="mark">✦</span>
-              <p>Un ritual a dúo, pensado para regalar y regalaros una pausa real.</p>
-              <span className="sign">Ritual Dúo</span>
+              <p>Dos camillas, una misma atmósfera de velas y aromaterapia. Un regalo memorable a compartir.</p>
+              <span className="sign">Experiencia Dúo</span>
             </R>
             <R v="r-mask" delay={200} className="img">
               <Parallax speed={0.12} className="inner">
-                <img className="cover-img" src={SITE_IMAGES.massageDetail} alt="Detalle de masaje relajante de espalda en Stefania Panzariu Studio" loading="lazy" />
+                <img className="cover-img" src={SITE_IMAGES.massageDetail} alt="Detalle de masaje relajante con aceites en Stefania Panzariu Studio" loading="lazy" />
               </Parallax>
             </R>
           </div>
 
           <div className="col-text">
-            <R className="kicker" style={{ marginBottom: 16 }}>Rituales de bienestar</R>
+            <R className="kicker" style={{ marginBottom: 16 }}>Experiencia Dúo &amp; Ritual Individual</R>
             <R as="h3" className="h-sub" delay={120} style={{ maxWidth: "20ch" }}>
-              Tres formas de desconectar, a tu ritmo y al de quien quieras llevar contigo.
+              Desconectar del estrés y recargar energías a tu ritmo o en compañía.
             </R>
             <div className="nails-features">
               <R as="div" className="feat" v="r-left">
-                <div className="label">En pareja</div>
+                <div className="label">En Pareja / Dúo</div>
                 <div>
-                  <h4>Masaje en Pareja · Ritual Dúo</h4>
-                  <p>Dos camillas, una misma cabina: comparte un ritual relajante con tu pareja, una amiga o en familia, en un ambiente cálido e íntimo.</p>
+                  <h4>Masaje en Dúo (Parejas, Amigas, Familia)</h4>
+                  <p>Dos terapeutas/camillas en la misma cabina para compartir un momento de calma absoluta con tu pareja, mejor amiga, madre/padre o hijo/a.</p>
                 </div>
               </R>
               <R as="div" className="feat" v="r-left" delay={120}>
-                <div className="label">Relajante</div>
+                <div className="label">Individual</div>
                 <div>
-                  <h4>Masaje Relajante</h4>
-                  <p>Maniobras suaves y envolventes que liberan tensión acumulada, calman la mente y devuelven la sensación de ligereza al cuerpo entero.</p>
+                  <h4>Masaje Relajante Corporal</h4>
+                  <p>Maniobras envolventes y presión personalizada con aceites botánicos para aliviar la tensión acumulada y serenar la mente.</p>
                 </div>
               </R>
               <R as="div" className="feat" v="r-left" delay={240}>
-                <div className="label">Experiencia</div>
+                <div className="label">Garantía</div>
                 <div>
-                  <h4>Aromaterapia &amp; calma</h4>
-                  <p>Aceites esenciales, luz cálida y silencio acompañado: cada sesión se adapta a tu nivel de presión y al tiempo que quieras regalarte.</p>
+                  <h4>Sin pagos previos online</h4>
+                  <p>Realizas tu reserva por WhatsApp y el pago se efectúa directamente en el establecimiento en Efectivo o Tarjeta.</p>
                 </div>
               </R>
             </div>
 
             <R delay={300} style={{ marginTop: 36 }}>
-              <a className="btn dark" href={wa("Hola Stefania, me gustaría reservar un masaje en pareja / relajante.")}>
-                Reservar mi masaje <span className="arrow">→</span>
+              <a className="btn dark" href={wa("Hola Stefania, quiero pedir cita para la Experiencia Dúo (Masaje en pareja / acompañante).")}>
+                Reservar Experiencia Dúo <span className="arrow">→</span>
               </a>
             </R>
           </div>
         </div>
       </div>
-    </section>);
-
+    </section>
+  );
 }
 
 /* ---------- Micropigmentación ---------- */
@@ -877,22 +954,29 @@ function BodySection() {
               <R as="div" v="r-left" className="it">
                 <div className="mark">✦</div>
                 <div>
-                  <h4>Maderoterapia</h4>
-                  <p>Técnica natural que moldea y tonifica la silueta mediante fricciones profundas con instrumentos de madera noble. Ayuda a reducir volumen, mejorar la circulación y combatir la celulitis.</p>
+                  <h4>Maderoterapia Corporal</h4>
+                  <p>Técnica natural con elementos de madera noble que moldea la silueta, tonifica el tejido y ayuda a alisar y combatir la celulitis.</p>
                 </div>
               </R>
-              <R as="div" v="r-left" delay={120} className="it">
+              <R as="div" v="r-left" delay={100} className="it">
                 <div className="mark">✦</div>
                 <div>
-                  <h4>Drenaje Linfático</h4>
-                  <p>Terapia manual suave y precisa que favorece la eliminación de toxinas. Ideal para aliviar la sensación de piernas cansadas, reducir la inflamación y tratar la retención de líquidos.</p>
+                  <h4>Drenaje Linfático Manual</h4>
+                  <p>Terapia suave y descongestiva que estimula el sistema linfático, favorece la eliminación de toxinas y alivia eficazmente la retención de líquidos y piernas cansadas.</p>
                 </div>
               </R>
-              <R as="div" v="r-left" delay={240} className="it">
+              <R as="div" v="r-left" delay={200} className="it">
                 <div className="mark">✦</div>
                 <div>
-                  <h4>Exfoliación y Envoltura</h4>
-                  <p>Renovación celular profunda que elimina impurezas y devuelve la elasticidad a la piel. Un tratamiento intensivo que deja el cuerpo profundamente hidratado, firme y luminoso.</p>
+                  <h4>Exfoliación Corporal</h4>
+                  <p>Renovación epidérmica profunda que elimina células muertas, suaviza el grano de la piel y prepara el tejido para una absorción óptima de principios activos.</p>
+                </div>
+              </R>
+              <R as="div" v="r-left" delay={300} className="it">
+                <div className="mark">✦</div>
+                <div>
+                  <h4>Envolturas Corporales Nutritivas</h4>
+                  <p>Ritual de hidratación y reafirmación intensiva con concentrados botánicos y arcillas que devuelven la elasticidad, firmeza y luminosidad al cuerpo.</p>
                 </div>
               </R>
             </div>
@@ -1111,14 +1195,15 @@ function TestimonialsSection() {
     { name: "Luz María Carrasco Castro", service: "Experiencia", date: "Hace un año", tags: ["experiencia"], text: "Eres la mejor, en todos los sentidos.", a: "L" },
   ];
 
-  const filters = [
+  const rawFilters = [
     { id: "all", label: "Todas", note: "Reseñas con texto" },
-    { id: "unas", label: "Uñas", note: "Diseño, duración y manicura" },
+    { id: "unas", label: "Uñas", note: "Diseño, duración y salud natural" },
     { id: "micro", label: "Micro", note: "Cejas, labios y ojos" },
     { id: "facial", label: "Facial", note: "Limpieza y tratamientos" },
     { id: "pies", label: "Pies", note: "Cuidado y bienestar" },
     { id: "experiencia", label: "Trato", note: "Puntualidad y confianza" },
   ];
+  const filters = rawFilters.filter((f) => f.id !== "micro" || FEATURES.showMicropigmentacion);
   const catLabel = {
     unas: "Uñas",
     micro: "Micropigmentación",
@@ -1474,31 +1559,34 @@ function FooterSection() {
 
 /* ---------- FAQ ---------- */
 function FaqSection() {
-  const faqs = [
-  {
-    q: "¿En qué consiste el masaje en pareja?",
-    a: "Es un ritual dúo en el que dos personas reciben un masaje relajante a la vez, en la misma cabina, con aromaterapia y un ambiente cálido pensado para compartir un momento de calma."
-  },
-  {
-    q: "¿Cuánto dura la micropigmentación de cejas, labios u ojos?",
-    a: "El resultado se mantiene de forma natural entre 12 y 24 meses, según tu tipo de piel, el cuidado diario y la exposición solar. Incluimos una sesión de retoque de asentamiento para consolidar un acabado impecable."
-  },
-  {
-    q: "¿Cómo es el proceso de cicatrización?",
-    a: "La primera semana el color se ve más intenso por la oxidación natural; en la segunda se forma una microcostra que se desprende sola; hacia la tercera la piel se renueva y el pigmento vuelve a la superficie; en la cuarta realizamos el retoque final."
-  },
-  {
-    q: "¿Qué medidas de higiene y seguridad seguís?",
-    a: "Trabajamos con asepsia de grado clínico conforme al Decreto 5/2004 de la JCCM, pigmentos registrados en la AEMPS, agujas monodosis de un solo uso y certificación sanitaria oficial."
-  },
-  {
-    q: "¿En qué consisten las uñas de autor y cuánto duran?",
-    a: "Son una manicura de alta precisión que trabaja la cutícula con detalle para lograr un esmaltado impecable que nace bajo el pliegue de la piel. Con nivelación de matriz y rubber base, la durabilidad supera las 3 semanas."
-  },
-  {
-    q: "¿Dónde estáis y cómo pido cita?",
-    a: `Estamos en ${BUSINESS.addressShort}, ${BUSINESS.postalCity}. ${BUSINESS.landmark} Atendemos con cita previa de lunes a viernes de 9:00 a 21:00; la forma más rápida de reservar es por WhatsApp.`
-  }];
+  const allFaqs = [
+    {
+      q: "¿En qué consiste la Experiencia Dúo / Masaje en pareja?",
+      a: "Es un ritual en el que dos personas reciben un masaje relajante simultáneamente en la misma cabina, acondicionada con luz suave, aromaterapia y música envolvente. Es la opción favorita para parejas, amigas, madre e hija o padre e hijo."
+    },
+    {
+      q: "¿Cómo se efectúa el pago de los tratamientos?",
+      a: "Todos los pagos se realizan directamente en el estudio al finalizar tu cita, mediante Efectivo o Tarjeta bancaria. No requerimos ningún pago ni señal previa online."
+    },
+    {
+      q: "¿Qué tratamientos corporales ofrecéis?",
+      a: "Ofrecemos Maderoterapia corporal (moldeado y reducción de celulitis), Drenaje Linfático manual (desintoxicación y alivio de piernas cansadas), Exfoliación corporal (renovación epidérmica) y Envolturas nutritivas (hidratación profunda y firmeza)."
+    },
+    {
+      q: "¿En qué consisten las uñas de autor y cuál es su durabilidad?",
+      a: "Trabajamos una manicura de alta precisión detallando la cutícula y aplicando nivelación de matriz con Rubber Base. La durabilidad supera las 3 semanas manteniendo la uña natural fuerte y sana."
+    },
+    {
+      q: FEATURES.showMicropigmentacion ? "¿Cuánto dura la micropigmentación de cejas, labios u ojos?" : null,
+      a: "El resultado se mantiene de forma natural entre 12 y 24 meses, según tu tipo de piel, el cuidado diario y la exposición solar. Incluimos una sesión de retoque de asentamiento para consolidar un acabado impecable."
+    },
+    {
+      q: "¿Dónde se encuentra el estudio y cómo puedo reservar cita?",
+      a: `Estamos situados en ${BUSINESS.addressShort}, ${BUSINESS.postalCity} (${BUSINESS.landmark}). Atendemos de lunes a viernes de 9:00 a 21:00 exclusivamente con cita previa. La forma más rápida de reservar es enviándonos un mensaje directo por WhatsApp.`
+    }
+  ];
+
+  const faqs = allFaqs.filter((f) => f.q !== null);
 
   return (
     <section className="sec-faq" id="faq">
@@ -1514,18 +1602,17 @@ function FaqSection() {
               <LineMask delay={120}>quieres <em style={{ fontFamily: "var(--serif)" }}>saber</em>.</LineMask>
             </h2>
             <R className="body" delay={200} style={{ marginTop: 24 }}>
-              Resolvemos las dudas más habituales antes de tu primera cita. Si te queda
-              alguna pregunta, escríbenos por WhatsApp y te respondemos personalmente.
+              Resolvemos tus dudas habituales antes de tu cita. Si tienes cualquier otra consulta, escríbenos por WhatsApp y te responderemos personalmente.
             </R>
             <R delay={300} style={{ marginTop: 28 }}>
-              <a className="btn dark" href={wa("Hola Stefania, tengo una duda antes de reservar cita. ¿Me puedes ayudar?")} target="_blank" rel="noopener">
-                Preguntar por WhatsApp <span className="arrow">→</span>
+              <a className="btn dark" href={wa("Hola Stefania, tengo una duda antes de reservar mi cita. ¿Me puedes asesorar?")} target="_blank" rel="noopener">
+                Consultar por WhatsApp <span className="arrow">→</span>
               </a>
             </R>
           </div>
           <div className="faq-list">
             {faqs.map((f, i) =>
-            <R as="details" className="faq-item" key={i} v="r-fade" delay={i * 70}>
+              <R as="details" className="faq-item" key={i} v="r-fade" delay={i * 70}>
                 <summary>
                   <span className="faq-q">{f.q}</span>
                   <span className="faq-ic" aria-hidden="true"></span>
@@ -1536,11 +1623,11 @@ function FaqSection() {
           </div>
         </div>
       </div>
-    </section>);
-
+    </section>
+  );
 }
 
-/* ---------- Floating WhatsApp button (mobile) ---------- */
+/* ---------- Floating WhatsApp button ---------- */
 function WhatsAppFab() {
   const msg = CITA_MSG;
   return (
@@ -1550,8 +1637,8 @@ function WhatsAppFab() {
         <path d="M8.5 9c.2 1 .9 2.4 2 3.5s2.5 1.8 3.5 2c.4 0 .9-.1 1.2-.5l.6-.8a.8.8 0 0 0-.2-1.1l-1.3-.8a.8.8 0 0 0-1 .2l-.3.4c-.7-.3-1.4-.7-1.9-1.2s-.9-1.2-1.2-1.9l.4-.3a.8.8 0 0 0 .2-1l-.8-1.3a.8.8 0 0 0-1.1-.2L8 6.6c-.4.3-.5.8-.5 1.2 0 .4.4.8 1 1.2z" />
       </svg>
       <span className="wa-fab-label">Pedir cita</span>
-    </a>);
-
+    </a>
+  );
 }
 
 /* ---------- App ---------- */
@@ -1563,34 +1650,35 @@ function App() {
       <Nav />
       <main id="contenido">
         <Hero />
+        <AboutStefaniaSection />
         <Interlude id="interlude-1"
-        src={SITE_IMAGES.massagePareja}
-        placeholder="Masaje en pareja · cabina con velas"
-        label="Masajes"
-        quote={<>Un paréntesis a dúo. <em style={{ fontFamily: "var(--serif)" }}>Tiempo para vosotros</em>.</>} />
+          src={SITE_IMAGES.massagePareja}
+          placeholder="Masaje en pareja · cabina con velas"
+          label="Experiencia Dúo"
+          quote={<>Un paréntesis a dúo. <em style={{ fontFamily: "var(--serif)" }}>Tiempo para compartir y desconectar</em>.</>} />
         <MassageSection />
         <Interlude id="interlude-2"
-        src={SITE_IMAGES.nailDetail}
-        placeholder="Mano de manicura · detalle macro"
-        label="Uñas de Autor"
-        quote={<>Esculpir la elegancia sobre la <em style={{ fontFamily: "var(--serif)" }}>salud natural</em>.</>} />
+          src={SITE_IMAGES.nailDetail}
+          placeholder="Mano de manicura · detalle macro"
+          label="Uñas de Autor"
+          quote={<>Esculpir la elegancia sobre la <em style={{ fontFamily: "var(--serif)" }}>salud natural de la uña</em>.</>} />
         <NailsSection />
         <Interlude id="interlude-3"
-        src={SITE_IMAGES.facialCabin}
-        placeholder="Cabina · velas, humo de aromaterapia"
-        label="Estética facial"
-        quote={<>Silenciar el ruido. <em style={{ fontFamily: "var(--serif)" }}>Devolver el resplandor</em>.</>} />
+          src={SITE_IMAGES.facialCabin}
+          placeholder="Cabina · velas, humo de aromaterapia"
+          label="Estética Facial"
+          quote={<>Silenciar el ruido. <em style={{ fontFamily: "var(--serif)" }}>Devolver el resplandor a tu piel</em>.</>} />
         <FacialSection />
         <BodySection />
-        <MicroSection />
+        {FEATURES.showMicropigmentacion && <MicroSection />}
         <TestimonialsSection />
         <TrackSection />
         <FaqSection />
       </main>
       <FooterSection />
       <WhatsAppFab />
-    </React.Fragment>);
-
+    </React.Fragment>
+  );
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
